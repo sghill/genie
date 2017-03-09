@@ -3,40 +3,34 @@ ext {
 }
 
 configurations {
-    jpaModelGen
+    jpaModelGen {
+        extendsFrom runtimeElements
+    }
 }
 
 dependencies {
     /*******************************
-     * Compile Dependencies
+     * API Dependencies
      *******************************/
 
-    compile project(":genie-common")
-
-    // JSON Patch Support
-    compile("com.github.fge:json-patch")
-
-    // Commons Libs
-    compile("commons-httpclient:commons-httpclient")
-    compile("commons-io:commons-io")
-    compile("org.apache.commons:commons-exec")
-
-    // Netflix Libs
-    compile("com.netflix.spectator:spectator-api")
-
-    // Spring Libs
-    compile("org.springframework.boot:spring-boot-starter-aop")
-    compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    compile("org.springframework.boot:spring-boot-starter-mail")
-    compile("org.springframework.retry:spring-retry")
-    compile("org.springframework.cloud:spring-cloud-aws-context")
-
-    // AWS Libs
-    compile("com.amazonaws:aws-java-sdk-sts")
+    api project(":genie-common")
+    api("com.github.fge:json-patch")
+    api("com.netflix.spectator:spectator-api")
+    api("org.apache.commons:commons-exec")
+    api("org.springframework.boot:spring-boot-starter")
+    api("org.springframework.boot:spring-boot-starter-data-jpa")
+    api("org.springframework.cloud:spring-cloud-aws-context")
 
     /*******************************
-     * Provided Dependencies
+     * Implementation Dependencies
      *******************************/
+
+    implementation("com.google.guava:guava")
+    implementation("commons-io:commons-io")
+    implementation("org.apache.commons:commons-lang3")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.retry:spring-retry")
 
     /*******************************
      * Runtime Dependencies
@@ -51,7 +45,7 @@ dependencies {
      * Test Dependencies
      *******************************/
 
-    testCompile(project(":genie-test"))
+    testCompile project(":genie-test")
     testCompile("org.dbunit:dbunit")
     testCompile("com.github.springtestdbunit:spring-test-dbunit")
 
@@ -69,7 +63,7 @@ task generateJPAMetaModel(type: JavaCompile, group: "build", description: "Gener
     source = sourceSets.main.java
     outputs.dir generatedSourcesJavaDir
     destinationDir = generatedSourcesJavaDir
-    classpath = configurations.compile + configurations.jpaModelGen
+    classpath = configurations.jpaModelGen
     options.compilerArgs = [
             "-proc:only"
     ]

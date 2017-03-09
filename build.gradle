@@ -29,6 +29,12 @@ def javaProjects = subprojects.findAll {
     it.name != "genie-demo" && it.name != "genie-ddl" && it.name != "genie-docs"
 }
 
+def javaLibraries = javaProjects.findAll {
+    it.name != "genie-app" && it.name != "genie-war"
+}
+
+def javaApps = javaProjects - javaLibraries
+
 allprojects {
     apply plugin: "jacoco"
     apply plugin: "idea"
@@ -56,7 +62,11 @@ task clean(type: Delete) {
 
 configure(javaProjects) {
     apply plugin: "nebula.netflixoss"
-    apply plugin: "java"
+    if (project in javaApps) {
+        apply plugin: "java"
+    } else {
+        apply plugin: "java-library"
+    }
     apply plugin: "checkstyle"
     apply plugin: "findbugs"
     apply plugin: "pmd"
@@ -125,10 +135,18 @@ configure(javaProjects) {
     }
 
     configurations {
+        apt
         all*.exclude group: "javax.servlet", module: "servlet-api"
     }
 
     dependencies {
+        /*******************************
+         * Annotation Processors
+         *******************************/
+
+        apt("com.google.code.findbugs:annotations")
+        apt("org.projectlombok:lombok")
+
         /*******************************
          * Compile Dependencies
          *******************************/
@@ -187,6 +205,7 @@ configure(javaProjects) {
     compileJava {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
         options.incremental = true
+        options.setAnnotationProcessorPath(configurations.apt)
     }
 
     compileTestJava {

@@ -36,7 +36,9 @@ import java.util.function.ToDoubleFunction;
 
 /**
  * Caches the downloaded file from the remote location.
- * Created by amajumdar on 7/22/16.
+ *
+ * @author amajumdar
+ * @since 3.0.0
  */
 @Slf4j
 public class CacheGenieFileTransferService extends GenieFileTransferService {
@@ -46,39 +48,37 @@ public class CacheGenieFileTransferService extends GenieFileTransferService {
     private final FileTransfer localFileTransfer;
     //File cache
     private final LoadingCache<String, File> fileCache = CacheBuilder.newBuilder()
-            .recordStats()
-            .build(
-                    new CacheLoader<String, File>() {
-                        public File load(
-                                @NotNull
-                                final String path) throws GenieException {
-                            return loadFile(path);
-                        }
-                    });
+        .recordStats()
+        .build(
+            new CacheLoader<String, File>() {
+                public File load(@NotNull final String path) throws GenieException {
+                    return loadFile(path);
+                }
+            });
 
     /**
      * Constructor.
      *
      * @param fileTransferFactory file transfer implementation factory
-     * @param baseCacheLocation file cache location
-     * @param localFileTransfer Local file transfer service
-     * @param registry spectator registry
+     * @param baseCacheLocation   file cache location
+     * @param localFileTransfer   Local file transfer service
+     * @param registry            spectator registry
      * @throws GenieException If there is any problem
      */
     public CacheGenieFileTransferService(
-            @NotNull final FileTransferFactory fileTransferFactory,
-            @NotNull final String baseCacheLocation,
-            @NotNull final FileTransfer localFileTransfer,
-            @NotNull final Registry registry) throws GenieException {
+        @NotNull final FileTransferFactory fileTransferFactory,
+        @NotNull final String baseCacheLocation,
+        @NotNull final FileTransfer localFileTransfer,
+        @NotNull final Registry registry) throws GenieException {
         super(fileTransferFactory);
         this.baseCacheLocation = createDirectories(baseCacheLocation).toString();
         this.localFileTransfer = localFileTransfer;
         registry.gauge("genie.jobs.file.cache.hitRate", fileCache,
-                (ToDoubleFunction<LoadingCache<String, File>>) value -> value.stats().hitRate());
+            (ToDoubleFunction<LoadingCache<String, File>>) value -> value.stats().hitRate());
         registry.gauge("genie.jobs.file.cache.missRate", fileCache,
-                (ToDoubleFunction<LoadingCache<String, File>>) value -> value.stats().missRate());
+            (ToDoubleFunction<LoadingCache<String, File>>) value -> value.stats().missRate());
         registry.gauge("genie.jobs.file.cache.loadExceptionRate", fileCache,
-                (ToDoubleFunction<LoadingCache<String, File>>) value -> value.stats().loadExceptionRate());
+            (ToDoubleFunction<LoadingCache<String, File>>) value -> value.stats().loadExceptionRate());
     }
 
     /**
@@ -89,13 +89,13 @@ public class CacheGenieFileTransferService extends GenieFileTransferService {
      * @throws GenieException If there is any problem
      */
     public void getFile(
-            @NotBlank(message = "Source file path cannot be empty.")
-            final String srcRemotePath,
-            @NotBlank(message = "Destination local path cannot be empty")
-            final String dstLocalPath
+        @NotBlank(message = "Source file path cannot be empty.")
+        final String srcRemotePath,
+        @NotBlank(message = "Destination local path cannot be empty")
+        final String dstLocalPath
     ) throws GenieException {
         log.debug("Called with src path {} and destination path {}", srcRemotePath, dstLocalPath);
-        File cachedFile = null;
+        File cachedFile;
         try {
             cachedFile = fileCache.get(srcRemotePath);
             // Before using the cached file check if the real file has been modified after we have cached
@@ -124,7 +124,7 @@ public class CacheGenieFileTransferService extends GenieFileTransferService {
     }
 
     protected Path createDirectories(final String path) throws GenieException {
-        Path result = null;
+        Path result;
         try {
             final File pathFile = new File(new URI(path).getPath());
             result = pathFile.toPath();
@@ -140,6 +140,7 @@ public class CacheGenieFileTransferService extends GenieFileTransferService {
     /**
      * Loads the file given the path and stores it under the cache location with file name as UUID string created using
      * the path.
+     *
      * @param path Path of the file to be loaded
      * @return loaded file
      * @throws GenieException Exception if the file does not load

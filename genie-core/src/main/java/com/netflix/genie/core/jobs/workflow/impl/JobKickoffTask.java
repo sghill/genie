@@ -88,8 +88,8 @@ public class JobKickoffTask extends GenieBaseTask {
         this.hostname = hostname;
         this.registry = registry;
         this.timer = registry.timer("genie.jobs.tasks.jobKickoffTask.timer");
-        retryTemplate = new RetryTemplate();
-        retryTemplate.setBackOffPolicy(new ExponentialBackOffPolicy());
+        this.retryTemplate = new RetryTemplate();
+        this.retryTemplate.setBackOffPolicy(new ExponentialBackOffPolicy());
     }
 
     /**

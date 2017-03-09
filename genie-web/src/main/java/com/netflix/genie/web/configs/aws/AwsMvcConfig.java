@@ -17,6 +17,7 @@
  */
 package com.netflix.genie.web.configs.aws;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -35,11 +36,12 @@ import java.io.IOException;
 @Profile("aws")
 @Configuration
 @Slf4j
+@Getter
 public class AwsMvcConfig {
 
     // See: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html
-    protected String publicHostNameGet = "http://169.254.169.254/latest/meta-data/public-hostname";
-    protected String localIPV4HostNameGet = "http://169.254.169.254/latest/meta-data/local-ipv4";
+    private final String publicHostNameAddress = "http://169.254.169.254/latest/meta-data/public-hostname";
+    private final String localIPV4HostNameAddress = "http://169.254.169.254/latest/meta-data/local-ipv4";
 
     /**
      * Get the host name for this application by calling the AWS metadata endpoints. Overrides default implementation
@@ -53,10 +55,10 @@ public class AwsMvcConfig {
     public String hostName(@Qualifier("genieRestTemplate") final RestTemplate restTemplate) throws IOException {
         String result;
         try {
-            result = restTemplate.getForObject(publicHostNameGet, String.class);
+            result = restTemplate.getForObject(this.publicHostNameAddress, String.class);
             log.debug("AWS Public Hostname: {}", result);
         } catch (Exception e) {
-            result = restTemplate.getForObject(localIPV4HostNameGet, String.class);
+            result = restTemplate.getForObject(this.localIPV4HostNameAddress, String.class);
             log.debug("AWS IPV4 Hostname: {}", result);
         }
         return result;

@@ -30,7 +30,7 @@ import javax.validation.constraints.NotNull;
  * @since 3.0.0
  */
 @Getter
-public class BaseJobEvent extends ApplicationEvent {
+class BaseJobEvent extends ApplicationEvent {
 
     private static final long serialVersionUID = 8635146103611268924L;
 
@@ -42,7 +42,7 @@ public class BaseJobEvent extends ApplicationEvent {
      * @param id The id of the job this event relates to
      * @param source The source object which generates this event
      */
-    public BaseJobEvent(@NotEmpty final String id, @NotNull final Object source) {
+    BaseJobEvent(@NotEmpty final String id, @NotNull final Object source) {
         super(source);
         this.id = id;
     }

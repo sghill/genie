@@ -24,7 +24,7 @@ package com.netflix.genie.core.jobs;
  */
 public enum AdminResources {
 
-    /**
+    /*
      * Enum containing the four types of Entities in Genie.
      */
 

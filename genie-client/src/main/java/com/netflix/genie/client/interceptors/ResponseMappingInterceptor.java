@@ -27,7 +27,7 @@ import okhttp3.Response;
 import java.io.IOException;
 
 /**
- * Class that evaluates the retrofit response code and maps it to an gitappropriate Genie Exception.
+ * Class that evaluates the retrofit response code and maps it to an appropriate Genie Exception.
  *
  * @author amsharma
  * @since 3.0.0

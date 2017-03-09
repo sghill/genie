@@ -42,9 +42,7 @@ public class JobCompletionHandler {
      * @param jobCompletionService An implementation of the job completion service.
      */
     @Autowired
-    public JobCompletionHandler(
-        final JobCompletionService jobCompletionService
-    ) {
+    public JobCompletionHandler(final JobCompletionService jobCompletionService) {
         this.jobCompletionService = jobCompletionService;
     }
 

@@ -12,46 +12,51 @@ ext {
 
 dependencies {
     /*******************************
-     * Compile Dependencies
+     * Annotation Processors
      *******************************/
 
-    compile(project(":genie-core"))
+    apt("org.springframework.boot:spring-boot-configuration-processor")
 
-    // Swagger libs
-    compile("io.springfox:springfox-swagger2")
-    compile("io.springfox:springfox-swagger-ui")
-    compile("io.springfox:springfox-bean-validators")
+    /*******************************
+     * API Dependencies
+     *******************************/
 
-    // Commons
-    compile("org.apache.commons:commons-exec")
-    compile("org.apache.httpcomponents:httpclient")
-    compile("commons-validator:commons-validator")
-
-    // JWT JOSE implementation lib
-    compile("org.bitbucket.b_c:jose4j")
-
-    // Spring Libs
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    compile("org.springframework.boot:spring-boot-starter-data-redis")
-    compile("org.springframework.boot:spring-boot-starter-mail")
-    compile("org.springframework.boot:spring-boot-starter-hateoas")
-    compile("org.springframework.boot:spring-boot-starter-integration")
-    compile("org.springframework.boot:spring-boot-starter-security")
-    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    compile("org.springframework.boot:spring-boot-starter-tomcat")
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.integration:spring-integration-zookeeper")
-    compile("org.springframework.cloud:spring-cloud-starter-eureka")
-    compile("org.springframework.cloud:spring-cloud-starter-spectator")
-    compile("org.springframework.security:spring-security-jwt")
-    compile("org.springframework.security.extensions:spring-security-saml2-core") {
+    api project(":genie-core")
+    api("io.springfox:springfox-swagger2")
+    api("org.apache.commons:commons-exec")
+    api("org.bitbucket.b_c:jose4j")
+    api("org.springframework.boot:spring-boot-starter-actuator")
+    api("org.springframework.boot:spring-boot-starter-data-redis")
+    api("org.springframework.boot:spring-boot-starter-hateoas")
+    api("org.springframework.boot:spring-boot-starter-mail")
+    api("org.springframework.boot:spring-boot-starter-security")
+    api("org.springframework.boot:spring-boot-starter-web")
+    api("org.springframework.integration:spring-integration-zookeeper")
+    api("org.springframework.retry:spring-retry")
+    api("org.springframework.security:spring-security-jwt")
+    api("org.springframework.security.extensions:spring-security-saml2-core") {
         exclude group: "org.bouncycastle", module: "bcprov-jdk15"
     }
-    compile("org.springframework.security.oauth:spring-security-oauth2")
-    compile("org.springframework.session:spring-session")
+    api("org.springframework.security.oauth:spring-security-oauth2")
 
-    // Thymeleaf Extras for Spring Security
-    compile("org.thymeleaf.extras:thymeleaf-extras-springsecurity4")
+    /*******************************
+     * Implementation Dependencies
+     *******************************/
+
+    implementation("com.amazonaws:aws-java-sdk-sts")
+    implementation("com.google.guava:guava")
+    implementation("commons-io:commons-io")
+    implementation("commons-validator:commons-validator")
+    implementation("io.springfox:springfox-swagger-ui")
+    implementation("io.springfox:springfox-bean-validators")
+    implementation("org.apache.commons:commons-lang3")
+    implementation("org.apache.httpcomponents:httpclient")
+    implementation("org.springframework.boot:spring-boot-starter-integration")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.cloud:spring-cloud-starter-eureka")
+    implementation("org.springframework.cloud:spring-cloud-starter-spectator")
+    implementation("org.springframework.session:spring-session")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity4")
 
     /*******************************
      * Provided Dependencies
@@ -71,7 +76,8 @@ dependencies {
      * Test Dependencies
      *******************************/
 
-    testCompile(project(":genie-test"))
+    testCompile project(":genie-test")
+    testCompile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     testCompile("com.github.springtestdbunit:spring-test-dbunit")
     testCompile("com.github.tomakehurst:wiremock")
     testCompile("com.jayway.jsonpath:json-path")

@@ -1,26 +1,23 @@
 dependencies {
     /*******************************
-     * Compile Dependencies
+     * API Dependencies
      *******************************/
 
-    compile("com.fasterxml.jackson.core:jackson-databind")
-    compile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
-    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    compile("com.google.guava:guava")
-    compile("org.apache.commons:commons-lang3")
-    compile("org.hibernate:hibernate-validator")
+    api("com.fasterxml.jackson.core:jackson-databind")
+    api("org.hibernate:hibernate-validator")
 
     /*******************************
-     * Provided Dependencies
+     * Implementation Dependencies
      *******************************/
 
-    /*******************************
-     * Runtime Dependencies
-     *******************************/
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("com.google.guava:guava")
+    implementation("org.apache.commons:commons-lang3")
 
     /*******************************
      * Test Dependencies
      *******************************/
 
-    testCompile(project(":genie-test"))
+    testCompile project(":genie-test")
 }

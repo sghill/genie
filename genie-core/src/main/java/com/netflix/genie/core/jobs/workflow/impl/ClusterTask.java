@@ -54,8 +54,7 @@ public class ClusterTask extends GenieBaseTask {
      * @param registry The metrics registry to use
      * @param fts File transfer service
      */
-    public ClusterTask(@NotNull final Registry registry,
-            @NotNull final GenieFileTransferService fts) {
+    public ClusterTask(@NotNull final Registry registry, @NotNull final GenieFileTransferService fts) {
         this.timer = registry.timer("genie.jobs.tasks.clusterTask.timer");
         this.fts = fts;
     }

@@ -35,6 +35,7 @@ import org.joda.time.Instant;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.TaskScheduler;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,15 +60,18 @@ public class JobStateServiceImpl implements JobStateService {
 
     /**
      * Constructor.
+     *
      * @param jobSubmitterService implementation of the job submitter service
      * @param scheduler           The task scheduler to use to register scheduling of job checkers
      * @param publisher           The application event publisher to use to publish synchronous events
      * @param registry            The metrics registry
      */
-    public JobStateServiceImpl(final JobSubmitterService jobSubmitterService,
-                               final TaskScheduler scheduler,
-                               final ApplicationEventPublisher publisher,
-                               final Registry registry) {
+    public JobStateServiceImpl(
+        @NotNull final JobSubmitterService jobSubmitterService,
+        @NotNull final TaskScheduler scheduler,
+        @NotNull final ApplicationEventPublisher publisher,
+        @NotNull final Registry registry
+    ) {
         this.jobSubmitterService = jobSubmitterService;
         this.scheduler = scheduler;
         this.registry = registry;
@@ -86,6 +90,7 @@ public class JobStateServiceImpl implements JobStateService {
     public void init(final String jobId) {
         jobs.putIfAbsent(jobId, new JobInfo());
     }
+
     /**
      * {@inheritDoc}
      */
@@ -177,6 +182,7 @@ public class JobStateServiceImpl implements JobStateService {
             return (int) this.jobs.values().stream().filter(JobInfo::isActive).count();
         }
     }
+
     /**
      * {@inheritDoc}
      */

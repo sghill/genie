@@ -1,14 +1,10 @@
 dependencies {
     /*******************************
-     * Compile Dependencies
+     * API Dependencies
      *******************************/
 
     /*******************************
-     * Provided Dependencies
-     *******************************/
-
-    /*******************************
-     * Runtime Dependencies
+     * Implementation Dependencies
      *******************************/
 
     /*******************************

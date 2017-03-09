@@ -56,7 +56,8 @@ public class ApplicationTask extends GenieBaseTask {
      * @param fts      File transfer service
      */
     public ApplicationTask(@NotNull final Registry registry,
-                           @NotNull final GenieFileTransferService fts) {
+                           @NotNull final GenieFileTransferService fts
+    ) {
         this.timer = registry.timer("genie.jobs.tasks.applicationTask.timer");
         this.fts = fts;
     }
@@ -65,95 +66,88 @@ public class ApplicationTask extends GenieBaseTask {
      * {@inheritDoc}
      */
     @Override
-    public void executeTask(
-        @NotNull
-        final Map<String, Object> context
-    ) throws GenieException, IOException {
+    public void executeTask(@NotNull final Map<String, Object> context) throws GenieException, IOException {
         final long start = System.nanoTime();
         try {
             final JobExecutionEnvironment jobExecEnv =
                 (JobExecutionEnvironment) context.get(JobConstants.JOB_EXECUTION_ENV_KEY);
             final String jobWorkingDirectory = jobExecEnv.getJobWorkingDir().getCanonicalPath();
-            final String genieDir = jobWorkingDirectory
-                + JobConstants.FILE_PATH_DELIMITER
-                + JobConstants.GENIE_PATH_VAR;
+            final String genieDir
+                = jobWorkingDirectory + JobConstants.FILE_PATH_DELIMITER + JobConstants.GENIE_PATH_VAR;
             final Writer writer = (Writer) context.get(JobConstants.WRITER_KEY);
             log.info("Starting Application Task for job {}", jobExecEnv.getJobRequest().getId());
 
+            for (Application application : jobExecEnv.getApplications()) {
+                final String applicationId = application
+                    .getId()
+                    .orElseThrow(() -> new GeniePreconditionException("Application without id"));
 
-            if (jobExecEnv.getApplications() != null) {
-                for (Application application : jobExecEnv.getApplications()) {
-                    final String applicationId = application
-                        .getId()
-                        .orElseThrow(() -> new GeniePreconditionException("Application without id"));
+                // Create the directory for this application under applications in the cwd
+                createEntityInstanceDirectory(
+                    genieDir,
+                    applicationId,
+                    AdminResources.APPLICATION
+                );
 
-                    // Create the directory for this application under applications in the cwd
-                    createEntityInstanceDirectory(
-                        genieDir,
-                        applicationId,
-                        AdminResources.APPLICATION
-                    );
+                // Create the config directory for this id
+                createEntityInstanceConfigDirectory(
+                    genieDir,
+                    applicationId,
+                    AdminResources.APPLICATION
+                );
 
-                    // Create the config directory for this id
-                    createEntityInstanceConfigDirectory(
-                        genieDir,
-                        applicationId,
-                        AdminResources.APPLICATION
-                    );
+                // Create the dependencies directory for this id
+                createEntityInstanceDependenciesDirectory(
+                    genieDir,
+                    applicationId,
+                    AdminResources.APPLICATION
+                );
 
-                    // Create the dependencies directory for this id
-                    createEntityInstanceDependenciesDirectory(
-                        genieDir,
-                        applicationId,
-                        AdminResources.APPLICATION
-                    );
-
-                    // Get the setup file if specified and add it as source command in launcher script
-                    final Optional<String> setupFile = application.getSetupFile();
-                    if (setupFile.isPresent()) {
-                        final String applicationSetupFile = setupFile.get();
-                        if (StringUtils.isNotBlank(applicationSetupFile)) {
-                            final String localPath = super.buildLocalFilePath(
-                                jobWorkingDirectory,
-                                applicationId,
-                                applicationSetupFile,
-                                FileType.SETUP,
-                                AdminResources.APPLICATION
-                            );
-                            this.fts.getFile(applicationSetupFile, localPath);
-
-                            super.generateSetupFileSourceSnippet(
-                                applicationId,
-                                "Application:",
-                                localPath,
-                                writer,
-                                jobWorkingDirectory);
-                        }
-                    }
-
-                    // Iterate over and get all dependencies
-                    for (final String dependencyFile : application.getDependencies()) {
+                // Get the setup file if specified and add it as source command in launcher script
+                final Optional<String> setupFile = application.getSetupFile();
+                if (setupFile.isPresent()) {
+                    final String applicationSetupFile = setupFile.get();
+                    if (StringUtils.isNotBlank(applicationSetupFile)) {
                         final String localPath = super.buildLocalFilePath(
                             jobWorkingDirectory,
                             applicationId,
-                            dependencyFile,
-                            FileType.DEPENDENCIES,
+                            applicationSetupFile,
+                            FileType.SETUP,
                             AdminResources.APPLICATION
                         );
-                        fts.getFile(dependencyFile, localPath);
-                    }
+                        this.fts.getFile(applicationSetupFile, localPath);
 
-                    // Iterate over and get all configuration files
-                    for (final String configFile : application.getConfigs()) {
-                        final String localPath = super.buildLocalFilePath(
-                            jobWorkingDirectory,
+                        super.generateSetupFileSourceSnippet(
                             applicationId,
-                            configFile,
-                            FileType.CONFIG,
-                            AdminResources.APPLICATION
-                        );
-                        fts.getFile(configFile, localPath);
+                            "Application:",
+                            localPath,
+                            writer,
+                            jobWorkingDirectory);
                     }
+                }
+
+                // Iterate over and get all dependencies
+                for (final String dependencyFile : application.getDependencies()) {
+                    final String localPath = super.buildLocalFilePath(
+                        jobWorkingDirectory,
+                        applicationId,
+                        dependencyFile,
+                        FileType.DEPENDENCIES,
+                        AdminResources.APPLICATION
+                    );
+                    fts.getFile(dependencyFile, localPath);
+                }
+
+                // Iterate over and get all configuration files
+                for (final String configFile : application.getConfigs()) {
+                    final String localPath = super.buildLocalFilePath(
+                        jobWorkingDirectory,
+                        applicationId,
+                        configFile,
+                        FileType.CONFIG,
+                        AdminResources.APPLICATION
+                    );
+                    fts.getFile(configFile, localPath);
                 }
             }
             log.info("Finished Application Task for job {}", jobExecEnv.getJobRequest().getId());

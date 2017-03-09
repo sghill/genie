@@ -110,7 +110,8 @@ public class JobConfig {
     public WorkflowTask clusterProcessorTask(
         final Registry registry,
         @Qualifier("cacheGenieFileTransferService")
-        final GenieFileTransferService fts) {
+        final GenieFileTransferService fts
+    ) {
         return new ClusterTask(registry, fts);
     }
 

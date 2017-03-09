@@ -5,17 +5,13 @@ dependencies {
      * Compile Dependencies
      *******************************/
 
-    compile(project(":genie-web"))
+    compile project(":genie-web")
 
     /*******************************
      * Provided Dependencies
      *******************************/
 
     compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
-
-    /*******************************
-     * Optional Dependencies
-     *******************************/
 
     /*******************************
      * Runtime Dependencies
@@ -25,7 +21,7 @@ dependencies {
      * Test Dependencies
      *******************************/
 
-    testCompile(project(":genie-test"))
+    testCompile project(":genie-test")
 }
 
 jar {
